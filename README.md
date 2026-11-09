@@ -16,21 +16,21 @@ winget install --id Git.Git --exact --source winget
 winget install --id OpenJS.NodeJS.LTS --exact --source winget
 ```
 
-Install the plugin using [install.ps1](https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.ps1).
+Install the plugin using [install.ps1](https://raw.githubusercontent.com/JeanMarcMbouma/DevOpsAIPlugin/main/scripts/install.ps1).
 
 ```powershell
-irm 'https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.ps1' | iex
+irm 'https://raw.githubusercontent.com/JeanMarcMbouma/DevOpsAIPlugin/main/scripts/install.ps1' | iex
 ```
 Or 
 ```powershell
 az login
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.ps1'))) -Organization 'YOUR_ORG' -Auth azcli -Replace
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/JeanMarcMbouma/DevOpsAIPlugin/main/scripts/install.ps1'))) -Organization 'YOUR_ORG' -Auth azcli -Replace
 ```
 
 ### macOS or Linux
 
 ```sh
-curl -fsSLo install.sh https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.sh && bash install.sh
+curl -fsSLo install.sh https://raw.githubusercontent.com/JeanMarcMbouma/DevOpsAIPlugin/main/scripts/install.sh && bash install.sh
 ```
 
 Enter the organization name from your Azure DevOps URL. For `https://dev.azure.com/contoso`, enter `contoso`. Start a new Codex session and ask **“List the Azure DevOps projects I can access.”** Complete the Microsoft sign-in prompt on first use.
@@ -48,10 +48,10 @@ If you installed version 0.1 from a local checkout, remove that marketplace entr
 Use `-Client` (PowerShell) or `--client` (Bash) with `codex`, `claude`, or `all`. The default, `auto`, selects each of `codex` and `claude` found on PATH. Every selected client is checked for a conflicting `azure-devops` connection before any configuration changes.
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.ps1'))) -Organization 'YOUR_ORG' -Auth azcli -Client claude
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/JeanMarcMbouma/DevOpsAIPlugin/main/scripts/install.ps1'))) -Organization 'YOUR_ORG' -Auth azcli -Client claude
 ```
 
-`-Source` or `--source` installs from a fork, a Git URL, or a local checkout instead of `JeanMarcMbouma/CodexPlugin`. If Claude Code already has the `azure-devops-local` marketplace from a different source, the installer stops. Rerun with `-Replace` or `--replace` to switch it. Claude Code uninstalls the plugin when its marketplace is removed, so the installer then reinstalls it from the new source.
+`-Source` or `--source` installs from a fork, a Git URL, or a local checkout instead of `JeanMarcMbouma/DevOpsAIPlugin`. If Claude Code already has the `azure-devops-local` marketplace from a different source, the installer stops. Rerun with `-Replace` or `--replace` to switch it. Claude Code uninstalls the plugin when its marketplace is removed, so the installer then reinstalls it from the new source.
 
 ## Claude Code
 
@@ -62,7 +62,7 @@ On Windows, the `claude` command must be on PATH. A standalone Claude Code insta
 To set up Claude Code manually, run the equivalent commands. On macOS or Linux, replace `cmd /c npx` with `npx`.
 
 ```sh
-claude plugin marketplace add JeanMarcMbouma/CodexPlugin
+claude plugin marketplace add JeanMarcMbouma/DevOpsAIPlugin
 claude plugin install azure-devops@azure-devops-local
 claude mcp add --scope user azure-devops -- cmd /c npx --yes @azure-devops/mcp@2.11.0 YOUR_ORG --authentication azcli -d core work work-items repositories pipelines search
 ```
