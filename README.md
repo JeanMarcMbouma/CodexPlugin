@@ -51,7 +51,7 @@ Use `-Client` (PowerShell) or `--client` (Bash) with `codex`, `claude`, or `all`
 & ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/JeanMarcMbouma/CodexPlugin/main/scripts/install.ps1'))) -Organization 'YOUR_ORG' -Auth azcli -Client claude
 ```
 
-`-Source` or `--source` installs from a fork, a Git URL, or a local checkout instead of `JeanMarcMbouma/CodexPlugin`.
+`-Source` or `--source` installs from a fork, a Git URL, or a local checkout instead of `JeanMarcMbouma/CodexPlugin`. If Claude Code already has the `azure-devops-local` marketplace from a different source, the installer stops. Rerun with `-Replace` or `--replace` to switch it. Claude Code uninstalls the plugin when its marketplace is removed, so the installer then reinstalls it from the new source.
 
 ## Claude Code
 

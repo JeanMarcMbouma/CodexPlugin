@@ -59,6 +59,10 @@ if [[ -z "$organization" ]]; then
 fi
 [[ "$organization" =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$ ]] || fail 'Enter the organization name from dev.azure.com/NAME.'
 
+if [[ -d "$source" ]]; then
+  source=$(cd "$source" && pwd)
+fi
+
 server_args=(--yes @azure-devops/mcp@2.11.0 "$organization" --authentication "$auth" -d core work work-items repositories pipelines search)
 
 # Claude Code on native Windows (Git Bash, MSYS, Cygwin) starts npx through cmd.
@@ -117,6 +121,26 @@ if contains_client claude; then
   if [[ "$claude_connection" == different && "$replace" != true ]]; then
     fail 'A different azure-devops MCP connection exists in claude. Use --replace to replace it.'
   fi
+  marketplaces=$(claude plugin marketplace list --json)
+  claude_marketplace=$(node -e '
+    const fs = require("node:fs"), path = require("node:path");
+    const [name, source] = process.argv.slice(1);
+    const entry = JSON.parse(fs.readFileSync(0, "utf8").replace(/^\uFEFF/, "")).find(item => item.name === name);
+    const repo = value => String(value || "").trim().replace(/^https:\/\/github\.com\//i, "")
+      .replace(/\.git$/i, "").replace(/\/+$/, "").toLowerCase();
+    const folder = value => {
+      const full = path.resolve(String(value || ""));
+      return process.platform === "win32" ? full.toLowerCase() : full;
+    };
+    let same = false;
+    if (entry && entry.source === "github") same = repo(source) === repo(entry.repo);
+    else if (entry && entry.source === "directory") same = folder(source) === folder(entry.path);
+    else if (entry) same = [entry.url, entry.repo, entry.path].some(value => value && repo(value) === repo(source));
+    console.log(!entry ? "absent" : same ? "match" : "different");
+  ' -- "$marketplace" "$source" <<< "$marketplaces") || fail 'Could not read the Claude Code marketplaces.'
+  if [[ "$claude_marketplace" == different && "$replace" != true ]]; then
+    fail "The $marketplace marketplace in claude uses a different source. Use --replace to switch it to $source."
+  fi
 fi
 
 if contains_client codex; then
@@ -129,12 +153,13 @@ if contains_client codex; then
 fi
 
 if contains_client claude; then
-  if claude plugin marketplace list --json | node -e '
-    const list = JSON.parse(require("node:fs").readFileSync(0, "utf8"));
-    process.exit(list.some(({name}) => name === process.argv[1]) ? 0 : 1);
-  ' -- "$marketplace"; then
+  if [[ "$claude_marketplace" == match ]]; then
     claude plugin marketplace update "$marketplace"
   else
+    if [[ "$claude_marketplace" == different ]]; then
+      # Removing the marketplace also uninstalls its plugins; the plugin is reinstalled below.
+      claude plugin marketplace remove "$marketplace"
+    fi
     claude plugin marketplace add "$source"
   fi
   if claude plugin list --json | node -e '
